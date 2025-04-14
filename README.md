@@ -21,16 +21,3 @@
 - **Xcode** — full native iOS development experience
 
 ---
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- macOS with **Xcode 15+**
-- iOS 16+ simulator or device
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/GameLibrary.git
