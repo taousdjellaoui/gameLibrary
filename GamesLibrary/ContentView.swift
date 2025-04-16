@@ -9,8 +9,13 @@ struct GameListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query var games: [Game]
     private var filter: Filter
+    @State private var gameToEdit: Game? = nil
+    let allGenres = ["Action", "Adventure", "RPG", "Strategy", "Simulation", "Horror", "Puzzle"]
+       let platforms = ["PS5", "PS4", "Xbox Series X", "Xbox One", "Nintendo Switch", "PC", "Mobile"]
 
-    init(filter: Filter) {
+    
+
+    init(filter: Filter = .all) {
         self.filter = filter
         let predicate: Predicate<Game>? = {
             switch filter {
@@ -48,11 +53,27 @@ struct GameListView: View {
             .listStyle(InsetGroupedListStyle())
             .navigationTitle(title(for: filter))
             .toolbar {
-                Button(action: addGame) {
+                Button(action: {
+                                   // 👇 Insert a temporary game object before presenting the sheet
+                                   let newGame = Game(
+                                       title: "",
+                                       platform: platforms.first ?? "Unknown",
+                                       genre: allGenres.first ?? "Unknown",
+                                       isCompleted: false,
+                                       notes: ""
+                                   )
+                                   modelContext.insert(newGame)
+                                   gameToEdit = newGame
+                }) {
                     Label("Add Game", systemImage: "plus.circle.fill")
                 }
             }
         }
+        .sheet(item: $gameToEdit) { game in
+                       NavigationStack {
+                           GameDetailView(game: game,isNew: true)
+                       }
+                   }
     }
 
     private func title(for filter: Filter) -> String {
@@ -66,10 +87,7 @@ struct GameListView: View {
         }
     }
 
-    private func addGame() {
-        let newGame = Game(title: "New Game", platform: "Unknown", genre: "Unknown", notes: "")
-        modelContext.insert(newGame)
-    }
+ 
 
     private func deleteGame(at offsets: IndexSet) {
         for index in offsets {

@@ -10,9 +10,14 @@ import SwiftUI
 struct GameDetailView: View {
     @Bindable var game: Game
     @State private var notes: String
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    let isNew: Bool
 
-    init(game: Game) {
+
+    init(game: Game, isNew: Bool = false) {
         self.game = game
+        self.isNew = isNew
         _notes = State(initialValue: game.notes ?? "")
     }
 
@@ -41,7 +46,26 @@ struct GameDetailView: View {
         .onDisappear {
             game.notes = notes
         }
-        .navigationTitle(game.title)
+        .navigationTitle(isNew ? "Add Game" : "Edit Game")
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarBackButtonHidden(true)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") {
+                            if isNew {
+                                modelContext.delete(game) // discard new game
+                            }
+                            dismiss()
+                        }
+                    }
+
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Save") {
+                            game.notes = notes
+                            dismiss()
+                        }
+                    }
+                }
     }
 }
 #Preview {

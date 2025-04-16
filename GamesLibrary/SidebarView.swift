@@ -26,7 +26,7 @@ struct SidebarView: View {
                 Label(item.rawValue, systemImage: icon(for : item))
                     .tag(item)
             }
-            .navigationTitle("GameLibrary")
+            .navigationTitle("Home")
         }detail: {
            switch selection {
            case .all:
